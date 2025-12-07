@@ -11,11 +11,28 @@ func SetupRoutes(router *gin.Engine) {
 	// Root endpoint (optional, biar nggak 404 di "/")
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message":    "Book Management API is running 🚀",
-			"health":     "/health",
-			"login":      "/api/login",
-			"categories": "/api/categories",
-			"books":      "/api/books",
+			"message": "Book Management API is running 🚀",
+			"endpoints": gin.H{
+				"Books": gin.H{
+					"GET /api/books":        "Menampilkan seluruh buku",
+					"POST /api/books":       "Menambahkan buku baru",
+					"GET /api/books/:id":    "Menampilkan detail buku berdasarkan ID",
+					"DELETE /api/books/:id": "Menghapus buku berdasarkan ID",
+				},
+				"Categories": gin.H{
+					"GET /api/categories":        "Menampilkan semua kategori",
+					"POST /api/categories":       "Menambahkan kategori baru",
+					"GET /api/categories/:id":    "Menampilkan detail kategori by ID",
+					"PUT /api/categories/:id":    "Update kategori berdasarkan ID",
+					"DELETE /api/categories/:id": "Hapus kategori berdasarkan ID",
+				},
+				"Auth": gin.H{
+					"POST /api/login": "Login dan mendapatkan JWT token",
+				},
+				"Health Check": gin.H{
+					"GET /health": "Menampilkan status API",
+				},
+			},
 		})
 	})
 
