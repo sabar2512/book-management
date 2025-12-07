@@ -8,6 +8,17 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine) {
+	// Root endpoint (optional, biar nggak 404 di "/")
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message":    "Book Management API is running 🚀",
+			"health":     "/health",
+			"login":      "/api/login",
+			"categories": "/api/categories",
+			"books":      "/api/books",
+		})
+	})
+
 	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
