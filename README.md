@@ -1,212 +1,207 @@
-# 🎯 Core Application Files - Quick Reference
+# Book Management API
 
-## ✅ All Core Files Created (9 files)
-
-### 1. **main.go** 
-Entry point - Initialize app, connect DB, setup routes, start server
-
-### 2. **config/database.go**
-Database connection with Railway support (DATABASE_URL or individual env vars)
-
-### 3. **middleware/auth.go**
-JWT authentication - GenerateToken() and AuthMiddleware()
-
-### 4. **models/book.go**
-Book model with validation + CalculateThickness() method
-
-### 5. **models/category.go**
-Category model with validation
-
-### 6. **handlers/auth.go**
-Login handler - Generate JWT token
-
-### 7. **handlers/book.go**
-5 book handlers: GetAll, Create, GetByID, Update, Delete
-
-### 8. **handlers/category.go**
-6 category handlers: GetAll, Create, GetByID, Update, Delete, GetBooksByCategory
-
-### 9. **routes/routes.go**
-Route configuration - Public and protected routes
+Book Management API adalah layanan backend berbasis Golang yang menyediakan fitur autentikasi JWT, manajemen buku, dan manajemen kategori. Aplikasi ini menggunakan PostgreSQL sebagai database utama dan dideploy melalui Railway menggunakan Dockerfile multi-stage.
 
 ---
 
-## 📂 File Locations
+## 1. Deskripsi Singkat
 
-```
-core-app/
-├── main.go                          [View](computer:///mnt/user-data/outputs/core-app/main.go)
-├── config/
-│   └── database.go                  [View](computer:///mnt/user-data/outputs/core-app/config/database.go)
-├── middleware/
-│   └── auth.go                      [View](computer:///mnt/user-data/outputs/core-app/middleware/auth.go)
-├── models/
-│   ├── book.go                      [View](computer:///mnt/user-data/outputs/core-app/models/book.go)
-│   └── category.go                  [View](computer:///mnt/user-data/outputs/core-app/models/category.go)
-├── handlers/
-│   ├── auth.go                      [View](computer:///mnt/user-data/outputs/core-app/handlers/auth.go)
-│   ├── book.go                      [View](computer:///mnt/user-data/outputs/core-app/handlers/book.go)
-│   └── category.go                  [View](computer:///mnt/user-data/outputs/core-app/handlers/category.go)
-└── routes/
-    └── routes.go                    [View](computer:///mnt/user-data/outputs/core-app/routes/routes.go)
-```
+API ini dirancang untuk kebutuhan pengelolaan buku dan kategori dengan fitur login dan proteksi akses melalui JWT. Seluruh endpoint utama berada di jalur `/api/*`, sementara endpoint root (`/`) memberikan dokumentasi ringkas mengenai layanan.
+
+Aplikasi ini dioptimalkan untuk lingkungan cloud, menggunakan Docker sebagai runtime dan Railway sebagai platform deployment.
 
 ---
 
-## 🚀 Quick Start
+## 2. Fitur Utama
 
-1. **Copy all files** to your project directory maintaining the folder structure
-2. **Install dependencies**: `go mod download`
-3. **Setup database**: Create PostgreSQL database
-4. **Configure .env**: Set database credentials
-5. **Run migrations**: Create tables (see migrations folder in main project)
-6. **Start server**: `go run main.go`
+### 2.1 Autentikasi (JWT)
+- Login menggunakan username dan password.
+- Mendapatkan JWT token untuk akses endpoint yang dilindungi.
+- Middleware memvalidasi token sebelum request diproses.
 
----
+### 2.2 Manajemen Buku
+Endpoint:
+- GET `/api/books`
+- GET `/api/books/:id`
+- POST `/api/books`
+- PUT `/api/books/:id`
+- DELETE `/api/books/:id`
 
-## 📊 Code Statistics
+Model buku mendukung informasi detail seperti deskripsi, gambar, harga, total halaman, tingkat ketebalan, dan metadata pembuatan/perubahan.
 
-| Component | Files | Functions | Lines |
-|-----------|-------|-----------|-------|
-| Main | 1 | 1 | 40 |
-| Config | 1 | 2 | 65 |
-| Middleware | 1 | 2 | 85 |
-| Models | 2 | 1 | 60 |
-| Handlers | 3 | 12 | 550 |
-| Routes | 1 | 1 | 50 |
-| **Total** | **9** | **19** | **~850** |
+### 2.3 Manajemen Kategori
+Endpoint:
+- GET `/api/categories`
+- GET `/api/categories/:id`
+- POST `/api/categories`
+- PUT `/api/categories/:id`
+- DELETE `/api/categories/:id`
+- GET `/api/categories/:id/books`
 
----
-
-## 🎯 Key Features
-
-### Authentication
-- ✅ JWT with 24h expiration
-- ✅ Secure token generation
-- ✅ Middleware protection
-
-### Validation
-- ✅ Release year: 1980-2024
-- ✅ Price: minimum 0
-- ✅ Total page: minimum 1
-- ✅ Required field checks
-
-### Business Logic
-- ✅ Auto-calculate thickness
-  - "tipis" if pages ≤ 100
-  - "tebal" if pages > 100
-- ✅ Category existence validation
-- ✅ Audit trail (created_by, modified_by)
-
-### Error Handling
-- ✅ 400 Bad Request - Invalid input
-- ✅ 401 Unauthorized - Auth failed
-- ✅ 404 Not Found - Resource missing
-- ✅ 500 Internal Server Error - DB errors
+Kategori dapat digunakan sebagai pengelompokan buku dan menjadi foreign key dalam tabel buku.
 
 ---
 
-## 📋 API Endpoints Summary
+## 3. Struktur Folder Project
 
-### Public (No Auth)
-- `POST /api/login` - Get JWT token
+book-management/
+│── main.go
+│── go.mod
+│── Dockerfile
+│── config/ : koneksi database
+│── routes/ : konfigurasi routing
+│── handlers/ : handler untuk auth, books, categories
+│── middleware/ : middleware JWT
+│── models/ : struktur data (Book dan Category)
 
-### Protected (JWT Required)
+yaml
+Salin kode
 
-**Categories (6 endpoints)**
-- `GET /api/categories` - List all
-- `POST /api/categories` - Create
-- `GET /api/categories/:id` - Get detail
-- `PUT /api/categories/:id` - Update
-- `DELETE /api/categories/:id` - Delete
-- `GET /api/categories/:id/books` - Get books
-
-**Books (5 endpoints)**
-- `GET /api/books` - List all
-- `POST /api/books` - Create
-- `GET /api/books/:id` - Get detail
-- `PUT /api/books/:id` - Update
-- `DELETE /api/books/:id` - Delete
+Struktur ini memisahkan logika aplikasi, membuat kode bersih, mudah dipahami, dan mudah dikembangkan lebih lanjut.
 
 ---
 
-## 🔍 Function Reference
+## 4. Struktur Database
 
-### config/database.go
-- `InitDB()` - Initialize database connection
-- `CloseDB()` - Close database connection
+### 4.1 Tabel Users
+Kolom:
+- id (SERIAL, PK)
+- username (TEXT, UNIQUE)
+- password (TEXT)
+- created_at
+- created_by
+- modified_at
+- modified_by
 
-### middleware/auth.go
-- `GenerateToken(username)` - Create JWT token
-- `AuthMiddleware()` - Validate JWT token
+### 4.2 Tabel Categories
+Kolom:
+- id (SERIAL, PK)
+- name (TEXT)
+- created_at
+- created_by
+- modified_at
+- modified_by
 
-### models/book.go
-- `CalculateThickness()` - Calculate book thickness
+### 4.3 Tabel Books
+Kolom:
+- id (SERIAL, PK)
+- title (TEXT)
+- description (TEXT)
+- image_url (TEXT)
+- release_year (INTEGER)
+- price (NUMERIC)
+- total_page (INTEGER)
+- thickness (INTEGER)
+- category_id (INTEGER, FK → categories.id)
+- created_at
+- created_by
+- modified_at
+- modified_by
 
-### handlers/auth.go
-- `Login(c)` - Handle login
-
-### handlers/book.go
-- `GetAllBooks(c)` - List all books
-- `CreateBook(c)` - Create new book
-- `GetBookByID(c)` - Get book details
-- `UpdateBook(c)` - Update book
-- `DeleteBook(c)` - Delete book
-
-### handlers/category.go
-- `GetAllCategories(c)` - List all categories
-- `CreateCategory(c)` - Create new category
-- `GetCategoryByID(c)` - Get category details
-- `UpdateCategory(c)` - Update category
-- `DeleteCategory(c)` - Delete category
-- `GetBooksByCategory(c)` - Get books by category
-
-### routes/routes.go
-- `SetupRoutes(router)` - Configure all routes
-
----
-
-## 💡 Usage Examples
-
-### 1. Login
-```bash
-curl -X POST http://localhost:8080/api/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"pass"}'
-```
-
-### 2. Create Book
-```bash
-curl -X POST http://localhost:8080/api/books \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "title": "Test Book",
-    "description": "A test book",
-    "release_year": 2023,
-    "price": 50000,
-    "total_page": 150,
-    "category_id": 1
-  }'
-```
-
-### 3. Get All Books
-```bash
-curl -X GET http://localhost:8080/api/books \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+Struktur tabel ini disesuaikan penuh dengan handler Golang sehingga tidak terjadi error saat pemetaan data.
 
 ---
 
-## 📖 Additional Documentation
+## 5. Contoh Penggunaan API
 
-For complete documentation, see:
-- **[CORE_APPLICATION_GUIDE.md](computer:///mnt/user-data/outputs/core-app/CORE_APPLICATION_GUIDE.md)** - Detailed guide for each file
-- **[README.md](computer:///mnt/user-data/outputs/README.md)** - Full project documentation
-- **[TESTING.md](computer:///mnt/user-data/outputs/TESTING.md)** - Testing guide
+### 5.1 Login (mendapatkan JWT)
+POST /api/login
 
----
+css
+Salin kode
 
-**All core application files are ready! 🎉**
+Body:
+```json
+{
+  "username": "admin@example.com",
+  "password": "12345"
+}
+Response:
 
-Copy the entire `core-app/` folder to your project and you're ready to go!
+json
+Salin kode
+{
+  "message": "Login successful",
+  "token": "<JWT_TOKEN>",
+  "username": "admin@example.com"
+}
+Gunakan token untuk semua request protected:
+
+makefile
+Salin kode
+Authorization: Bearer <JWT_TOKEN>
+5.2 Menambah Buku
+bash
+Salin kode
+POST /api/books
+Header:
+
+pgsql
+Salin kode
+Authorization: Bearer <JWT_TOKEN>
+Content-Type: application/json
+Body:
+
+json
+Salin kode
+{
+  "title": "Bumi Manusia",
+  "description": "Novel sejarah Indonesia",
+  "image_url": "https://example.com/book.jpg",
+  "release_year": 1980,
+  "price": 120000,
+  "total_page": 500,
+  "category_id": 1
+}
+5.3 Mendapatkan Semua Buku
+sql
+Salin kode
+GET /api/books
+Authorization: Bearer <JWT_TOKEN>
+6. Deployment Railway
+Aplikasi dideploy menggunakan Dockerfile berikut:
+
+dockerfile
+Salin kode
+FROM golang:1.25-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o main .
+
+FROM alpine:3.19
+WORKDIR /app
+RUN apk add --no-cache ca-certificates
+COPY --from=builder /app/main .
+EXPOSE 8080
+CMD ["./main"]
+Environment Variable Wajib:
+DATABASE_URL → URL PostgreSQL dari Railway
+
+JWT_SECRET → secret key JWT
+
+7. Dokumentasi Root
+Akses:
+
+sql
+Salin kode
+GET /
+Output memberikan ringkasan status aplikasi dan daftar endpoint yang tersedia.
+
+Contoh:
+
+json
+Salin kode
+{
+  "message": "Book Management API is running 🚀",
+  "endpoints": {
+    "Books": { "...": "..." },
+    "Categories": { "...": "..." }
+  }
+}
+8. Lisensi
+MIT — dapat digunakan dan dimodifikasi bebas.
+
+9. Kontribusi
+Pull request dan masukan sangat diterima.
